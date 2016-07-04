@@ -39,11 +39,12 @@ def parse_bigrams(text):
                  # where word1 appears immediately before word2 
     previous_word = ''
     current_word = ''
+    skip = set(["'"])
     for c in text.lower():
         if c.isalnum():
             current_word += c
-        else:
-            if previous_word != '' and current_word != '' and (current_word == 'a' or len(current_word) > 1):
+        elif c not in skip:
+            if previous_word != '' and current_word != '' and ((current_word == 'a' or previous_word == 'a') or (len(current_word) > 1 and len(previous_word) > 1)):
                 bigram = (previous_word, current_word)
                 if bigram not in bigrams:
                     bigrams[bigram] = 0

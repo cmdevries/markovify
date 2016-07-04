@@ -71,18 +71,30 @@ def generate_text(bigrams):
             pair[1] = pair[1] / float(total)
         countlist.sort(key = lambda x: x[1], reverse = True)    
     current_word = random.choice(words.keys())
-    for i in range(10000):
-        print current_word, 
-        r = random.random()
-        curr_prob = 0
-        for word, prob in words[current_word]:
-            curr_prob += prob
-            if r < curr_prob:
-                if word in words:
-                    current_word = word
+    sentences = 1000
+    prob_stop = 0.05
+    maximum = 20
+    minimum = 5
+    for s in range(sentences): 
+        for i in range(maximum):
+            r = random.random()
+            if i == 0:
+                print "%s%s" % (current_word[0].upper(), current_word[1:]),
+            else:
+                if i > minimum and r < prob_stop or i == maximum - 1:
+                    print "%s.\n" % current_word
                     break
                 else:
-                    current_word = random.choice(words.keys())
+                    print current_word, 
+            curr_prob = 0
+            for word, prob in words[current_word]:
+                curr_prob += prob
+                if r < curr_prob:
+                    if word in words:
+                        current_word = word
+                        break
+                    else:
+                        current_word = random.choice(words.keys())
 
 def markov(urls):
     bigrams = {}

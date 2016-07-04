@@ -71,8 +71,8 @@ def generate_text(bigrams):
             pair[1] = pair[1] / float(total)
         countlist.sort(key = lambda x: x[1], reverse = True)    
     current_word = random.choice(words.keys())
-    for i in range(100):
-        print current_word, '',
+    for i in range(10000):
+        print current_word, 
         r = random.random()
         curr_prob = 0
         for word, prob in words[current_word]:

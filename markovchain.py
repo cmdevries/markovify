@@ -80,6 +80,9 @@ def generate_text(bigrams):
         maximum = 10000
         for i in range(maximum):
             print current_word,
+            if current_word[-1] == '.':
+                print
+                print
             r = random.random()
             curr_prob = 0
             for word, prob in words[current_word]:
@@ -126,7 +129,6 @@ def markov(urls):
             bigrams[bigram] += count    
     for url in urls:
         merge(parse_bigrams(fetch_text(url)))
-    sort_print(bigrams)    
     generate_text(bigrams)
 
 if __name__ == '__main__':

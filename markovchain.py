@@ -73,7 +73,9 @@ def generate_text(bigrams):
         for pair in countlist:
             pair[1] = pair[1] / float(total)
         countlist.sort(key = lambda x: x[1], reverse = True)    
-    current_word = random.choice(words.keys())
+    current_word = 'a'
+    while current_word[0].islower(): # start with an upper case word
+        current_word = random.choice(words.keys())
     if True:
         maximum = 10000
         for i in range(maximum):

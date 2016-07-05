@@ -39,12 +39,15 @@ def parse_bigrams(text):
                  # where word1 appears immediately before word2 
     previous_word = ''
     current_word = ''
-    skip = set(["'"])
-    for c in text.lower():
-        if c.isalnum():
+    include = set(["'", "."])
+    for c in text:
+        if c.isalnum() or c in include:
             current_word += c
-        elif c not in skip:
-            if previous_word != '' and current_word != '' and ((current_word == 'a' or previous_word == 'a') or (len(current_word) > 1 and len(previous_word) > 1)):
+        else:
+            words_not_empty = previous_word != '' and current_word != ''
+            one_word_is_a = current_word == 'a' or previous_word == 'a'
+            words_not_single_letter = len(current_word) > 1 and len(previous_word) > 1
+            if words_not_empty and (one_word_is_a or words_not_single_letter):
                 bigram = (previous_word, current_word)
                 if bigram not in bigrams:
                     bigrams[bigram] = 0
@@ -71,21 +74,11 @@ def generate_text(bigrams):
             pair[1] = pair[1] / float(total)
         countlist.sort(key = lambda x: x[1], reverse = True)    
     current_word = random.choice(words.keys())
-    sentences = 1000
-    prob_stop = 0.05
-    maximum = 20
-    minimum = 5
-    for s in range(sentences): 
+    if True:
+        maximum = 10000
         for i in range(maximum):
+            print current_word,
             r = random.random()
-            if i == 0:
-                print "%s%s" % (current_word[0].upper(), current_word[1:]),
-            else:
-                if i > minimum and r < prob_stop or i == maximum - 1:
-                    print "%s.\n" % current_word
-                    break
-                else:
-                    print current_word, 
             curr_prob = 0
             for word, prob in words[current_word]:
                 curr_prob += prob
@@ -95,6 +88,32 @@ def generate_text(bigrams):
                         break
                     else:
                         current_word = random.choice(words.keys())
+    else:
+        sentences = 1000
+        prob_stop = 0.05
+        maximum = 20
+        minimum = 5
+        for s in range(sentences): 
+            for i in range(maximum):
+                r = random.random()
+                stripped_word = current_word.strip('.')
+                if i == 0:
+                    print "%s%s" % (stripped_word[0].upper(), stripped_word[1:]),
+                else:
+                    if i > minimum and r < prob_stop or i == maximum - 1:
+                        print "%s.\n" % stripped_word
+                        break
+                    else:
+                        print stripped_word,
+                curr_prob = 0
+                for word, prob in words[current_word]:
+                    curr_prob += prob
+                    if r < curr_prob:
+                        if word in words:
+                            current_word = word
+                            break
+                        else:
+                            current_word = random.choice(words.keys())
 
 def markov(urls):
     bigrams = {}

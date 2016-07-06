@@ -93,7 +93,7 @@ def generate_text(bigrams):
     maximum = 10000
     for i in range(maximum):
         print current_word,
-        if current_word[-1] == '.':
+        if current_word[-1] == '.' and current_word.count('.') == 1:
             print
             print
         r = random.random()

@@ -28,7 +28,7 @@ def fetch_text(url):
     parser.feed(response.text)
     return parser.ptext
 
-def parse_bigrams(text):
+def count_bigrams(text):
     bigrams = {} # bigrams[word1][word2] -> count
                  # where word1 appears immediately before word2 
     previous_word = ''
@@ -94,7 +94,7 @@ def generate_text(bigrams):
 def process(urls):
     bigrams = {}
     for url in urls:
-        merge(bigrams, parse_bigrams(fetch_text(url)))
+        merge(bigrams, count_bigrams(fetch_text(url)))
     convert_to_probabilities(bigrams)
     generate_text(bigrams)
 

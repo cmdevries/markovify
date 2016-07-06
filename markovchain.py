@@ -54,12 +54,13 @@ def count_bigrams(text):
                  # where word1 appears immediately before word2 in the text 
     previous_word = ''
     current_word = ''
-    include = set(["'", "."])
+    include = set(["'", ".", "-"])
     for c in text:
         if c.isalnum() or c in include:
             current_word += c
         else:
-            current_word.strip("'") # only process apostrophes inside words
+            # only process apostrophes and dashes inside words
+            current_word = current_word.strip("'-") 
             if current_word != '':
                 count_bigram(bigrams, previous_word, current_word)
                 previous_word = current_word

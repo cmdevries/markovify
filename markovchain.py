@@ -49,6 +49,17 @@ def count_bigram(bigrams, previous_word, current_word):
             bigrams[previous_word][current_word] = 0
         bigrams[previous_word][current_word] += 1
 
+def clean_word(current_word):
+    # only process apostrophes and dashes inside words
+    # and fullstops at the end
+    ends_with_fullstop = False
+    if len(current_word) > 0:
+        ends_with_fullstop = current_word[-1] == '.' 
+    current_word = current_word.strip("'-.")
+    if ends_with_fullstop:
+        current_word += '.'
+    return current_word
+
 def count_bigrams(text):
     bigrams = {} # bigrams[word1][word2] -> count
                  # where word1 appears immediately before word2 in the text 
@@ -59,8 +70,7 @@ def count_bigrams(text):
         if c.isalnum() or c in include:
             current_word += c
         else:
-            # only process apostrophes and dashes inside words
-            current_word = current_word.strip("'-") 
+            current_word = clean_word(current_word)
             if current_word != '':
                 count_bigram(bigrams, previous_word, current_word)
                 previous_word = current_word

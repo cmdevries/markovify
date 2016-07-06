@@ -31,9 +31,27 @@ def fetch_text(url):
     parser.feed(response.text)
     return parser.text()
 
+def valid_bigram(previous_word, current_word):
+    # strip full stops for determining validity
+    # for example, 'M.' is a single character word
+    previous_word = previous_word.strip('.')
+    current_word = current_word.strip('.')
+    words_not_empty = previous_word != '' and current_word != ''
+    one_word_is_a = current_word == 'a' or previous_word == 'a'
+    words_not_single_letter = len(current_word) > 1 and len(previous_word) > 1
+    return words_not_empty and (one_word_is_a or words_not_single_letter)
+
+def count_bigram(bigrams, previous_word, current_word):
+    if valid_bigram(previous_word, current_word):
+        if previous_word not in bigrams:
+            bigrams[previous_word] = {}
+        if current_word not in bigrams[previous_word]:
+            bigrams[previous_word][current_word] = 0
+        bigrams[previous_word][current_word] += 1
+
 def count_bigrams(text):
     bigrams = {} # bigrams[word1][word2] -> count
-                 # where word1 appears immediately before word2 
+                 # where word1 appears immediately before word2 in the text 
     previous_word = ''
     current_word = ''
     include = set(["'", "."])
@@ -41,17 +59,11 @@ def count_bigrams(text):
         if c.isalnum() or c in include:
             current_word += c
         else:
-            words_not_empty = previous_word != '' and current_word != ''
-            one_word_is_a = current_word == 'a' or previous_word == 'a'
-            words_not_single_letter = len(current_word) > 1 and len(previous_word) > 1
-            if words_not_empty and (one_word_is_a or words_not_single_letter):
-                if previous_word not in bigrams:
-                    bigrams[previous_word] = {}
-                if current_word not in bigrams[previous_word]:
-                    bigrams[previous_word][current_word] = 0
-                bigrams[previous_word][current_word] += 1
-            previous_word = current_word
-            current_word = ''
+            current_word.strip("'") # only process apostrophes inside words
+            if current_word != '':
+                count_bigram(bigrams, previous_word, current_word)
+                previous_word = current_word
+                current_word = ''
     return bigrams 
 
 def merge(bigrams, bigrams_new):
@@ -74,6 +86,7 @@ def convert_to_probabilities(bigrams):
 def generate_text(bigrams):
     if len(bigrams) == 0:
         print 'No statistics to generate text from'
+        return
     current_word = 'a'
     while current_word[0].islower(): # start with an upper case word
         current_word = random.choice(bigrams.keys())

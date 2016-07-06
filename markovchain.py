@@ -21,12 +21,15 @@ class Text(HTMLParser):
     def handle_data(self, data):
         if self.p > 0:
             self.ptext += ' ' + data;
+    
+    def text(self):
+        return self.ptext
 
 def fetch_text(url):
     response = requests.get(url)
     parser = Text()
     parser.feed(response.text)
-    return parser.ptext
+    return parser.text()
 
 def count_bigrams(text):
     bigrams = {} # bigrams[word1][word2] -> count

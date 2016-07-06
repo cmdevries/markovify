@@ -28,14 +28,8 @@ def fetch_text(url):
     parser.feed(response.text)
     return parser.ptext
 
-def sort_print(bigrams):
-    items = bigrams.items()
-    items.sort(key = lambda x: x[1])
-    for kv in items:
-        print('%s -> %s' % kv)
-
 def parse_bigrams(text):
-    bigrams = {} # (word1, word2) -> count
+    bigrams = {} # bigrams[word1][word2] -> count
                  # where word1 appears immediately before word2 
     previous_word = ''
     current_word = ''
@@ -48,87 +42,60 @@ def parse_bigrams(text):
             one_word_is_a = current_word == 'a' or previous_word == 'a'
             words_not_single_letter = len(current_word) > 1 and len(previous_word) > 1
             if words_not_empty and (one_word_is_a or words_not_single_letter):
-                bigram = (previous_word, current_word)
-                if bigram not in bigrams:
-                    bigrams[bigram] = 0
-                bigrams[bigram] += 1
+                if previous_word not in bigrams:
+                    bigrams[previous_word] = {}
+                if current_word not in bigrams[previous_word]:
+                    bigrams[previous_word][current_word] = 0
+                bigrams[previous_word][current_word] += 1
             previous_word = current_word
             current_word = ''
     return bigrams 
 
-def generate_text(bigrams):
-    total = 0
-    for count in bigrams.values():
-        total += count
-    words = {} # word -> list of (word, probability)    
-    for bigram, count in bigrams.items():
-        word1, word2 = bigram
-        if word1 not in words:
-            words[word1] = []
-        words[word1].append([word2, count])    
-    for countlist in words.values():
+def merge(bigrams, bigrams_new):
+    for previous_word, countmap in bigrams_new.items():
+        for current_word, count in countmap.items():
+            if previous_word not in bigrams:
+                bigrams[previous_word] = {}
+            if current_word not in bigrams[previous_word]:
+                bigrams[previous_word][current_word] = 0
+            bigrams[previous_word][current_word] += count
+
+def convert_to_probabilities(bigrams):
+    for countmap in bigrams.values():
         total = 0
-        for word, count in countlist:
+        for count in countmap.values():
             total += count
-        for pair in countlist:
-            pair[1] = pair[1] / float(total)
-        countlist.sort(key = lambda x: x[1], reverse = True)    
+        for word in countmap.keys():
+            countmap[word] = countmap[word] / float(total) if total != 0 else 0
+
+def generate_text(bigrams):
+    if len(bigrams) == 0:
+        print 'No statistics to generate text from'
     current_word = 'a'
     while current_word[0].islower(): # start with an upper case word
-        current_word = random.choice(words.keys())
-    if True:
-        maximum = 10000
-        for i in range(maximum):
-            print current_word,
-            if current_word[-1] == '.':
-                print
-                print
-            r = random.random()
-            curr_prob = 0
-            for word, prob in words[current_word]:
-                curr_prob += prob
-                if r < curr_prob:
-                    if word in words:
-                        current_word = word
-                        break
-                    else:
-                        current_word = random.choice(words.keys())
-    else:
-        sentences = 1000
-        prob_stop = 0.05
-        maximum = 20
-        minimum = 5
-        for s in range(sentences): 
-            for i in range(maximum):
-                r = random.random()
-                stripped_word = current_word.strip('.')
-                if i == 0:
-                    print "%s%s" % (stripped_word[0].upper(), stripped_word[1:]),
+        current_word = random.choice(bigrams.keys())
+    maximum = 10000
+    for i in range(maximum):
+        print current_word,
+        if current_word[-1] == '.':
+            print
+            print
+        r = random.random()
+        curr_prob = 0
+        for word, prob in bigrams[current_word].items():
+            curr_prob += prob
+            if r < curr_prob:
+                if word in bigrams:
+                    current_word = word
+                    break
                 else:
-                    if i > minimum and r < prob_stop or i == maximum - 1:
-                        print "%s.\n" % stripped_word
-                        break
-                    else:
-                        print stripped_word,
-                curr_prob = 0
-                for word, prob in words[current_word]:
-                    curr_prob += prob
-                    if r < curr_prob:
-                        if word in words:
-                            current_word = word
-                            break
-                        else:
-                            current_word = random.choice(words.keys())
+                    current_word = random.choice(bigrams.keys())
 
-def markov(urls):
+def process(urls):
     bigrams = {}
-    def merge(bigrams_new):
-        for bigram, count in bigrams_new.items():
-            if bigram not in bigrams:
-                bigrams[bigram] = 0
-            bigrams[bigram] += count    
     for url in urls:
-        merge(parse_bigrams(fetch_text(url)))
+        merge(bigrams, parse_bigrams(fetch_text(url)))
+    convert_to_probabilities(bigrams)
     generate_text(bigrams)
 
 if __name__ == '__main__':
@@ -136,4 +103,4 @@ if __name__ == '__main__':
         print('usage: %s [list of urls to learn markov chains from]'
             % sys.argv[0])
         sys.exit(1)
-    markov(sys.argv[1:])
+    process(sys.argv[1:])

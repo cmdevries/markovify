@@ -108,10 +108,10 @@ def generate_text(bigrams):
             print
             print
         r = random.random()
-        curr_prob = 0
-        for word, prob in bigrams[current_word].items():
-            curr_prob += prob
-            if r < curr_prob:
+        cumulative_probability = 0.0
+        for word, probability in bigrams[current_word].items():
+            cumulative_probability += probability
+            if r < cumulative_probability:
                 if word in bigrams:
                     current_word = word
                     break

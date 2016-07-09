@@ -1,8 +1,8 @@
-# markovchain
+# Markov Chain
 Fetch text from p tags in URLs and generate text using markov chains with
 transition probabilities learned from the text.
 
-## usage 
+## Usage 
 The program takes a list of URLs to scrape via command line arguments.
 
     $ python markovchain.py https://en.wikipedia.org/wiki/Art

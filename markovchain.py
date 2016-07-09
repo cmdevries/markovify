@@ -5,11 +5,13 @@ import sys
 from HTMLParser import HTMLParser
 
 class Text(HTMLParser):
+    """Extract text from <p> tags inside HTML."""
+
     def __init__(self):
         HTMLParser.__init__(self)
         self.p = 0
         self.ptext = ''
-        
+
     def handle_starttag(self, tag, attrs):
         if tag == 'p':
             self.p += 1
@@ -21,19 +23,33 @@ class Text(HTMLParser):
     def handle_data(self, data):
         if self.p > 0:
             self.ptext += ' ' + data;
-    
+
     def text(self):
+        """Retrieve the text observed inside <p> tags."""
         return self.ptext
 
 def fetch_text(url):
+    """fetch_text(string) -> string
+
+    Retrieve the text inside <p> tags from the specified url.
+    """
     response = requests.get(url)
     parser = Text()
     parser.feed(response.text)
     return parser.text()
 
 def valid_bigram(previous_word, current_word):
-    # strip full stops for determining validity
-    # for example, 'M.' is a single character word
+    """valid_bigram(string, string) -> boolean
+
+    Given two words that are adjacent in text determine if is a valid. The words
+    can be empty strings. The previous word for the first word is the empty
+    string and there are other cases where an empty word can occur does to
+    irregularities in the text such as a token contain only characters that are
+    ignored.
+
+    Full stops are stripped prior to determining validity. For example, 'M.'
+    is a single character word.
+    """
     previous_word = previous_word.strip('.')
     current_word = current_word.strip('.')
     words_not_empty = previous_word != '' and current_word != ''
@@ -42,6 +58,10 @@ def valid_bigram(previous_word, current_word):
     return words_not_empty and (one_word_is_a or words_not_single_letter)
 
 def count_bigram(bigrams, previous_word, current_word):
+    """count_bigram(dict(dict(numeric)), string, string) -> None
+
+    Update the counts for bigrams[previous_word][current_word].
+    """
     if valid_bigram(previous_word, current_word):
         if previous_word not in bigrams:
             bigrams[previous_word] = {}
@@ -50,19 +70,26 @@ def count_bigram(bigrams, previous_word, current_word):
         bigrams[previous_word][current_word] += 1
 
 def clean_word(current_word):
-    # only process apostrophes and dashes inside words
-    # and fullstops at the end
+    """clean_word(string) -> string
+
+    Clean the current word of unwanted characters. There are only apostrophes
+    and dashes inside words and fullstops at the end.
+    """
     ends_with_fullstop = False
     if len(current_word) > 0:
-        ends_with_fullstop = current_word[-1] == '.' 
+        ends_with_fullstop = current_word[-1] == '.'
     current_word = current_word.strip("'-.")
     if ends_with_fullstop:
         current_word += '.'
     return current_word
 
 def count_bigrams(text):
-    bigrams = {} # bigrams[word1][word2] -> count
-                 # where word1 appears immediately before word2 in the text 
+    """bigrams(string) -> dict(dict(int))
+
+    Returns bigrams where, bigrams[word1][word2] -> count, and word1 appears
+    immediately before word2 in the text.
+    """
+    bigrams = {}
     previous_word = ''
     current_word = ''
     include = set(["'", ".", "-"])
@@ -75,9 +102,13 @@ def count_bigrams(text):
                 count_bigram(bigrams, previous_word, current_word)
                 previous_word = current_word
                 current_word = ''
-    return bigrams 
+    return bigrams
 
 def merge(bigrams, bigrams_new):
+    """merge(dict(dict(numeric)), dict(dict(numeric))) -> None
+
+    Merges bigrams_new into bigrams where the counts are added.
+    """
     for previous_word, countmap in bigrams_new.items():
         for current_word, count in countmap.items():
             if previous_word not in bigrams:
@@ -87,6 +118,12 @@ def merge(bigrams, bigrams_new):
             bigrams[previous_word][current_word] += count
 
 def convert_to_probabilities(bigrams):
+    """convert_to_probabilities(dict(dict(numeric))) -> None
+
+    Modify bigrams so that for each word in the outer dictionary the numeric
+    type associated with all words in the inner dictionary sums to 1; i.e.
+    count / total.
+    """
     for countmap in bigrams.values():
         total = 0
         for count in countmap.values():
@@ -95,18 +132,21 @@ def convert_to_probabilities(bigrams):
             countmap[word] = countmap[word] / float(total) if total != 0 else 0
 
 def generate_text(bigrams):
+    """generate_text(dict(dict(float))) -> string
+
+    Generate text randomly based on the transition probabilities in bigrams.
+    """
     if len(bigrams) == 0:
-        print 'No statistics to generate text from'
-        return
+        return 'No statistics to available generate text'
     current_word = 'a'
     while current_word[0].islower(): # start with an upper case word
         current_word = random.choice(bigrams.keys())
     maximum = 10000
+    text = ''
     for i in range(maximum):
-        print current_word,
+        text += '%s ' % current_word
         if current_word[-1] == '.' and current_word.count('.') == 1:
-            print
-            print
+            text += '\n\n'
         r = random.random()
         cumulative_probability = 0.0
         for word, probability in bigrams[current_word].items():
@@ -117,13 +157,19 @@ def generate_text(bigrams):
                     break
                 else:
                     current_word = random.choice(bigrams.keys())
+    return text
 
 def process(urls):
+    """process(list(string)) -> None
+
+    Parse all the text inside <p> tags for each url in urls and generate random
+    text using the transition probabilities.
+    """
     bigrams = {}
     for url in urls:
         merge(bigrams, count_bigrams(fetch_text(url)))
     convert_to_probabilities(bigrams)
-    generate_text(bigrams)
+    print(generate_text(bigrams))
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

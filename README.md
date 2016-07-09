@@ -1,5 +1,5 @@
 # markovchain
-Fetch text from <p> tags in URLs and generate text using markov chains with
+Fetch text from p tags in URLs and generate text using markov chains with
 transition probabilities learned from the text.
 
 ## usage 
@@ -9,7 +9,7 @@ The program takes a list of URLs to scrape via command line arguments.
     https://en.wikipedia.org/wiki/War https://en.wikipedia.org/wiki/Religion
 
 And then it randomly generates often humourus text based on the probabilities
-of word transitions in the text scraped from these URLs. For example:
+of word transitions in the text scraped from these URLs.
 
     However the art Symbolism impressionism and military tactics and video or
     intended to each artwork have emerged in the sound of Émile Durkheim Karl

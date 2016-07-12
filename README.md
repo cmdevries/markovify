@@ -8,18 +8,18 @@ The program takes a list of URLs to scrape via command line arguments.
     $ ./markovify.py https://en.wikipedia.org/wiki/Art
     https://en.wikipedia.org/wiki/War https://en.wikipedia.org/wiki/Religion
 
-The program will scrape two random Wikipedia pages by default. 
-
-    $ ./markovify
-
-    The Inuyama Castle which is located in 1868.
-
 And then it randomly generates often humourus text based on the probabilities
 of word transitions in the text scraped from these URLs.
 
     However the art Symbolism impressionism and military tactics and video or
     intended to each artwork have emerged in the sound of Émile Durkheim Karl
     Marx and infection.
+
+The program will scrape two random Wikipedia pages by default. 
+
+    $ ./markovify
+
+    The Inuyama Castle which is located in 1868.
 
 Mix odd topics for more hilarity.
 

@@ -1,4 +1,4 @@
-# Markov Chain
+# Markovify
 Fetch text from p tags in URLs and generate text using markov chains with
 transition probabilities learned from the text.
 

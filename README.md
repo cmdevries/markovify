@@ -5,7 +5,7 @@ transition probabilities learned from the text.
 ## Usage 
 The program takes a list of URLs to scrape via command line arguments.
 
-    $ python markovchain.py https://en.wikipedia.org/wiki/Art
+    $ ./markovify.py https://en.wikipedia.org/wiki/Art
     https://en.wikipedia.org/wiki/War https://en.wikipedia.org/wiki/Religion
 
 And then it randomly generates often humourus text based on the probabilities
@@ -17,7 +17,8 @@ of word transitions in the text scraped from these URLs.
 
 Mix odd topics for more hilarity.
 
-    $ python markovchain.py https://en.wikipedia.org/wiki/George_W._Bush
+    $ ./markovify.py https://en.wikipedia.org/wiki/George_W._Bush
     https://en.wikipedia.org/wiki/Fashion
-
-    Machine vision technology has spent some textile design motifs had been.
+    
+    She is using a person chooses to track how to his name be Jesus Day in Iraq
+    and to as the law a fashion industry.

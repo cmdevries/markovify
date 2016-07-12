@@ -17,7 +17,7 @@ of word transitions in the text scraped from these URLs.
 
 The program will scrape two random Wikipedia pages by default. 
 
-    $ ./markovify
+    $ ./markovify.py
 
     The Inuyama Castle which is located in 1868.
 

@@ -182,8 +182,14 @@ def process(urls):
     print(generate_text(bigrams))
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
+    if len(sys.argv) > 1 and sys.argv[1].lower() == '--help':
         print('usage: %s [list of urls to learn markov chains from]'
             % sys.argv[0])
         sys.exit(1)
-    process(sys.argv[1:])
+    pages = []
+    if len(sys.argv) < 2:
+        random_page = 'https://en.wikipedia.org/wiki/Special:Random'
+        pages = [random_page, random_page]
+    else:
+        pages = sys.argv[1:]
+    process(pages)

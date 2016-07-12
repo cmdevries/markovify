@@ -84,14 +84,12 @@ def clean_word(current_word):
         current_word += '.'
     return current_word
 
-def count_bigrams(text):
-    """bigrams(string) -> dict(dict(int))
+def parse_tokens(text):
+    """parse_tokens(string) -> list(string)
 
-    Returns bigrams where, bigrams[word1][word2] -> count, and word1 appears
-    immediately before word2 in the text.
+    Return a list of words in the text.
     """
-    bigrams = {}
-    previous_word = ''
+    words = []
     current_word = ''
     include = set(["'", ".", "-"])
     for c in text:
@@ -100,9 +98,20 @@ def count_bigrams(text):
         else:
             current_word = clean_word(current_word)
             if current_word != '':
-                count_bigram(bigrams, previous_word, current_word)
-                previous_word = current_word
+                words.append(current_word)
                 current_word = ''
+    return words
+
+def count_bigrams(text):
+    """bigrams(string) -> dict(dict(int))
+
+    Returns bigrams where, bigrams[word1][word2] -> count, and word1 appears
+    immediately before word2 in the text.
+    """
+    bigrams = {}
+    tokens = parse_tokens(text)
+    for previous_word, current_word in zip(tokens[:-1], tokens[1:]):
+        count_bigram(bigrams, previous_word, current_word)
     return bigrams
 
 def merge(bigrams, bigrams_new):

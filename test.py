@@ -141,6 +141,12 @@ class TestConverToProbabilities(unittest.TestCase):
         self.assertEqual(bigrams['chain']['mal'], 1/float(2))
         self.assertEqual(bigrams['chain']['bridge'], 1/float(2))
 
+class TestFormatWord(unittest.TestCase):
+    def test_format_word(self):
+        self.assertEqual(markovify.format_word('hello'), 'hello ')
+        self.assertEqual(markovify.format_word('a'), 'a ')
+        self.assertEqual(markovify.format_word('markov.'), 'markov. \n\n')
+
 class TestGenerateText(unittest.TestCase):
     def test_generate_text(self):
         bigrams = {'Markov': {'chain': 1, 'tree': 1, 'graph': 1},

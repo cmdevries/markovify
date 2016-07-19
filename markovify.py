@@ -141,6 +141,16 @@ def convert_to_probabilities(bigrams):
         for word in countmap.keys():
             countmap[word] = countmap[word] / float(total) if total != 0 else 0
 
+def format_word(current_word):
+    """make_word(string) -> string
+
+    Format the current word for appending to the generated text.
+    """
+    word = '%s ' % current_word
+    if current_word[-1] == '.' and current_word.count('.') == 1:
+        word += '\n\n'
+    return word
+
 def generate_text(bigrams):
     """generate_text(dict(dict(float))) -> string
 
@@ -154,14 +164,10 @@ def generate_text(bigrams):
     maximum = 10000
     text = ''
     for i in range(maximum):
-        text += '%s ' % current_word
-        if current_word[-1] == '.' and current_word.count('.') == 1:
-            text += '\n\n'
+        text += format_word(current_word)
         if current_word not in bigrams:
             current_word = random.choice(bigrams.keys())
-            text += '%s ' % current_word
-            if current_word[-1] == '.' and current_word.count('.') == 1:
-                text += '\n\n'
+            text += format_word(current_word)
         r = random.random()
         cumulative_probability = 0.0
         for word, probability in bigrams[current_word].items():

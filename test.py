@@ -47,6 +47,7 @@ class TestValidBigram(unittest.TestCase):
         self.assertFalse(markovify.valid_bigram('.', '.'))
         self.assertFalse(markovify.valid_bigram('.', ''))
         self.assertFalse(markovify.valid_bigram('', '.'))
+        self.assertFalse(markovify.valid_bigram('M.', 'U.'))
         self.assertFalse(markovify.valid_bigram('', '...'))
         self.assertFalse(markovify.valid_bigram('....', '...'))
         self.assertFalse(markovify.valid_bigram('markov', '..'))

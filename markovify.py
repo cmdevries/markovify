@@ -54,7 +54,7 @@ def valid_bigram(previous_word, current_word):
     previous_word = previous_word.strip('.')
     current_word = current_word.strip('.')
     words_not_empty = previous_word != '' and current_word != ''
-    one_word_is_a = current_word == 'a' or previous_word == 'a'
+    one_word_is_a = (current_word == 'a') ^ (previous_word == 'a')
     words_not_single_letter = len(current_word) > 1 and len(previous_word) > 1
     return words_not_empty and (one_word_is_a or words_not_single_letter)
 

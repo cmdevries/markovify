@@ -155,11 +155,13 @@ def generate_text(bigrams):
     text = ''
     for i in range(maximum):
         text += '%s ' % current_word
+        if current_word[-1] == '.' and current_word.count('.') == 1:
+            text += '\n\n'
         if current_word not in bigrams:
             current_word = random.choice(bigrams.keys())
             text += '%s ' % current_word
-        if current_word[-1] == '.' and current_word.count('.') == 1:
-            text += '\n\n'
+            if current_word[-1] == '.' and current_word.count('.') == 1:
+                text += '\n\n'
         r = random.random()
         cumulative_probability = 0.0
         for word, probability in bigrams[current_word].items():

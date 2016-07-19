@@ -157,7 +157,7 @@ class TestGenerateText(unittest.TestCase):
         generated_bigrams = markovify.count_bigrams(text)
         markovify.convert_to_probabilities(generated_bigrams)
         def test(previous_word, current_word):
-            epsilon = 0.01
+            epsilon = 0.02
             diff = (bigrams[previous_word][current_word] -
                    generated_bigrams[previous_word][current_word])
             self.assertTrue(diff < epsilon)

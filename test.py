@@ -29,5 +29,30 @@ class TestTextParser(unittest.TestCase):
         self.parse('<html><p>a<p>b<p>c</p><p>d<p>e</p></p></p><p>f</p></p></html>',
                    ' a b c d e f')
 
+class TestValidBigram(unittest.TestCase):
+    def test_valid(self):
+        self.assertTrue(markovify.valid_bigram('markov', 'chain'))
+        self.assertTrue(markovify.valid_bigram('markov', 'a'))
+        self.assertTrue(markovify.valid_bigram('a', 'chain'))
+
+    def test_both_a(self):
+        self.assertFalse(markovify.valid_bigram('a', 'a'))
+
+    def test_empty(self):
+        self.assertFalse(markovify.valid_bigram('', ''))
+        self.assertFalse(markovify.valid_bigram('markov', ''))
+        self.assertFalse(markovify.valid_bigram('', 'chain'))
+
+    def test_period(self):
+        self.assertFalse(markovify.valid_bigram('.', '.'))
+        self.assertFalse(markovify.valid_bigram('.', ''))
+        self.assertFalse(markovify.valid_bigram('', '.'))
+        self.assertFalse(markovify.valid_bigram('', '...'))
+        self.assertFalse(markovify.valid_bigram('....', '...'))
+        self.assertFalse(markovify.valid_bigram('markov', '..'))
+        self.assertFalse(markovify.valid_bigram('.', 'chain'))
+        self.assertTrue(markovify.valid_bigram('markov.', 'chain.'))
+        self.assertTrue(markovify.valid_bigram('..markov.', 'chain...'))
+
 if __name__ == '__main__':
     unittest.main()

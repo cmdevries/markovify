@@ -91,6 +91,39 @@ class TestCountBigram(unittest.TestCase):
         self.assertEqual(bigrams['random']['field'], 2)
         self.assertEqual(bigrams['markov']['chain'], 4)
 
+class TestCleanWord(unittest.TestCase):
+    def test_unmodified(self):
+        self.assertEqual(markovify.clean_word(''), '')
+        self.assertEqual(markovify.clean_word('a'), 'a')
+        self.assertEqual(markovify.clean_word('Markov'), 'Markov')
+
+    def test_ends_with_period(self):
+        self.assertEqual(markovify.clean_word('Markov.'), 'Markov.')
+        self.assertEqual(markovify.clean_word('.Markov.'), 'Markov.')
+        self.assertEqual(markovify.clean_word('..Markov.'), 'Markov.')
+        self.assertEqual(markovify.clean_word('.Mar.kov.'), 'Mar.kov.')
+        self.assertEqual(markovify.clean_word('.Mar.kov..'), 'Mar.kov.')
+        self.assertEqual(markovify.clean_word('..Mar.kov.'), 'Mar.kov.')
+        self.assertEqual(markovify.clean_word('..Mar.kov..'), 'Mar.kov.')
+
+    def test_hyphenated(self):
+        self.assertEqual(markovify.clean_word('markov-chain'), 'markov-chain')
+        self.assertEqual(markovify.clean_word('-markov-chain'), 'markov-chain')
+        self.assertEqual(markovify.clean_word('-markov-chain-'), 'markov-chain')
+        self.assertEqual(markovify.clean_word('markov-chain-'), 'markov-chain')
+        self.assertEqual(markovify.clean_word('markov-chain--'), 'markov-chain')
+
+    def test_apostrophe(self):
+        self.assertEqual(markovify.clean_word("markov's"), "markov's")
+        self.assertEqual(markovify.clean_word("'markov's"), "markov's")
+        self.assertEqual(markovify.clean_word("'markov's'"), "markov's")
+        self.assertEqual(markovify.clean_word("markov's'"), "markov's")
+
+    def test_all_together(self):
+        self.assertEqual(markovify.clean_word("ma.rk-ov's"), "ma.rk-ov's")
+        self.assertEqual(markovify.clean_word("'-..-'ma.rk-ov's"), "ma.rk-ov's")
+        self.assertEqual(markovify.clean_word("'-..-'ma.rk-ov's'..-"), "ma.rk-ov's")
+
 class TestMerge(unittest.TestCase):
     def test_both_nonempty(self):
         bigrams = {'markov': {'chain': 1336}, 'chain': {'mal': 31335}}

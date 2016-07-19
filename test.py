@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 import markovify
+import requests
+import SimpleHTTPServer
+import SocketServer
 import unittest
 
 class TestTextParser(unittest.TestCase):
@@ -28,6 +31,17 @@ class TestTextParser(unittest.TestCase):
         # Depth first traversal
         self.parse('<html><p>a<p>b<p>c</p><p>d<p>e</p></p></p><p>f</p></p></html>',
                    ' a b c d e f')
+
+class TestFetchText(unittest.TestCase):
+    def test_fetch_text(self):
+        # Monkey patch requests to mock get(url) to reutrn fixed HTML
+        original = requests.get
+        class Response:
+            def __init__(self):
+                self.text = '<html><p>a<p>b<p>c</p><p>d<p>e</p></p></p><p>f</p></p></html>'
+        requests.get = lambda x: Response()
+        self.assertTrue(markovify.fetch_text('dummy'), ' a b c d e f')
+        requests.get = original
 
 class TestValidBigram(unittest.TestCase):
     def test_valid(self):

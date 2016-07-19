@@ -200,5 +200,13 @@ class TestGenerateText(unittest.TestCase):
         test('chain', 'mal')
         test('chain', 'bridge')
 
+class TestRemoveBrokenChains(unittest.TestCase):
+    def test_remove_broken_chains(self):
+        bigrams = {'markov': {'chain': 1, 'tree': 1, 'graph': 1},
+                   'chain': {'mal': 1, 'bridge': 1, 'markov': 1},
+                   'mal' : {'knight': 1}}
+        markovify.remove_broken_chains(bigrams)
+        self.assertEqual(bigrams,{'markov': {'chain': 1}, 'chain': {'markov': 1}})
+
 if __name__ == '__main__':
     unittest.main()

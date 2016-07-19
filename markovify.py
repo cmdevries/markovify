@@ -177,6 +177,26 @@ def generate_text(bigrams):
                 break
     return text
 
+def remove_broken_chains(bigrams):
+    """remove_broken_chains(dict(dict(numeric))
+
+    Remove bigrams where the second word does not exist as a first word. This
+    prevents following a bigram that can not be followed. This removes words
+    from the inner dictionaries that do not exist in the outer dictionary.
+    If the outer dictionary is also empty, it is also removed."""
+    removed_any = True
+    while removed_any:
+        removed_any = False
+        for countmap in bigrams.values():
+            for current_word in countmap.keys():
+                if current_word not in bigrams:
+                    countmap.pop(current_word)
+                    removed_any = True
+        for previous_word, countmap in bigrams.items():
+            if len(countmap) == 0:
+                bigrams.pop(previous_word)
+                removed_any = True
+
 def process(urls):
     """process(list(string)) -> None
 
@@ -188,6 +208,7 @@ def process(urls):
         text, final_url = fetch_text(url)
         print('FETCHED TEXT FROM: %s\n' % final_url)
         merge(bigrams, count_bigrams(text))
+    remove_broken_chains(bigrams)
     convert_to_probabilities(bigrams)
     print(generate_text(bigrams))
 

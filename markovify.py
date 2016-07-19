@@ -37,7 +37,7 @@ def fetch_text(url):
     response = requests.get(url)
     parser = Text()
     parser.feed(response.text)
-    return parser.text()
+    return parser.text(), response.url
 
 def valid_bigram(previous_word, current_word):
     """valid_bigram(string, string) -> boolean
@@ -177,7 +177,9 @@ def process(urls):
     """
     bigrams = {}
     for url in urls:
-        merge(bigrams, count_bigrams(fetch_text(url)))
+        text, final_url = fetch_text(url)
+        print('FETCHED TEXT FROM: %s\n' % final_url)
+        merge(bigrams, count_bigrams(text))
     convert_to_probabilities(bigrams)
     print(generate_text(bigrams))
 

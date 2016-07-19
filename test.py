@@ -37,6 +37,7 @@ class TestFetchText(unittest.TestCase):
         class Response:
             def __init__(self):
                 self.text = '<html><p>a<p>b<p>c</p><p>d<p>e</p></p></p><p>f</p></p></html>'
+                self.url = 'http://www.markovchain.com'
         requests.get = lambda x: Response()
         self.assertTrue(markovify.fetch_text('dummy'), ' a b c d e f')
         requests.get = original

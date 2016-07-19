@@ -91,5 +91,33 @@ class TestCountBigram(unittest.TestCase):
         self.assertEqual(bigrams['random']['field'], 2)
         self.assertEqual(bigrams['markov']['chain'], 4)
 
+class TestMerge(unittest.TestCase):
+    def test_both_nonempty(self):
+        bigrams = {'markov': {'chain': 1336}, 'chain': {'mal': 31335}}
+        bigrams_new = {'markov': {'chain' : 1}, 'chain': {'mal': 2}}
+        markovify.merge(bigrams, bigrams_new)
+        self.assertEqual(bigrams['markov']['chain'], 1337)
+        self.assertEqual(bigrams['chain']['mal'], 31337)
+
+    def test_left_empty(self):
+        bigrams = {}
+        bigrams_new = {'markov': {'chain' : 1}, 'chain': {'mal': 2}}
+        markovify.merge(bigrams, bigrams_new)
+        self.assertEqual(bigrams['markov']['chain'], 1)
+        self.assertEqual(bigrams['chain']['mal'], 2)
+
+    def test_right_empty(self):
+        bigrams = {'markov': {'chain' : 1}, 'chain': {'mal': 2}}
+        bigrams_new = {}
+        markovify.merge(bigrams, bigrams_new)
+        self.assertEqual(bigrams['markov']['chain'], 1)
+        self.assertEqual(bigrams['chain']['mal'], 2)
+
+    def test_both_empty(self):
+        bigrams = {}
+        bigrams_new = {}
+        markovify.merge(bigrams, bigrams_new)
+        self.assertEqual(bigrams, {})
+
 if __name__ == '__main__':
     unittest.main()

@@ -155,6 +155,9 @@ def generate_text(bigrams):
     text = ''
     for i in range(maximum):
         text += '%s ' % current_word
+        if current_word not in bigrams:
+            current_word = random.choice(bigrams.keys())
+            text += '%s ' % current_word
         if current_word[-1] == '.' and current_word.count('.') == 1:
             text += '\n\n'
         r = random.random()
@@ -162,11 +165,8 @@ def generate_text(bigrams):
         for word, probability in bigrams[current_word].items():
             cumulative_probability += probability
             if r < cumulative_probability:
-                if word in bigrams:
-                    current_word = word
-                    break
-                else:
-                    current_word = random.choice(bigrams.keys())
+                current_word = word
+                break
     return text
 
 def process(urls):

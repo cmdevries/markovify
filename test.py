@@ -142,5 +142,24 @@ class TestConverToProbabilities(unittest.TestCase):
         self.assertEqual(bigrams['chain']['mal'], 1/float(2))
         self.assertEqual(bigrams['chain']['bridge'], 1/float(2))
 
+class TestGenerateText(unittest.TestCase):
+    def test_generate_text(self):
+        bigrams = {'Markov': {'chain': 1, 'tree': 1, 'graph': 1},
+                   'chain': {'mal': 1, 'bridge': 1}}
+        markovify.convert_to_probabilities(bigrams)
+        text = markovify.generate_text(bigrams)
+        generated_bigrams = markovify.count_bigrams(text)
+        markovify.convert_to_probabilities(generated_bigrams)
+        def test(previous_word, current_word):
+            epsilon = 0.01
+            diff = (bigrams[previous_word][current_word] -
+                   generated_bigrams[previous_word][current_word])
+            self.assertTrue(diff < epsilon)
+        test('Markov', 'chain')
+        test('Markov', 'tree')
+        test('Markov', 'graph')
+        test('chain', 'mal')
+        test('chain', 'bridge')
+
 if __name__ == '__main__':
     unittest.main()

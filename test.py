@@ -119,7 +119,7 @@ class TestMerge(unittest.TestCase):
         markovify.merge(bigrams, bigrams_new)
         self.assertEqual(bigrams, {})
 
-class ConverToProbabilities(unittest.TestCase):
+class TestConverToProbabilities(unittest.TestCase):
     def test_one_bigram(self):
         bigrams = {'markov': {'chain': 1}}
         markovify.convert_to_probabilities(bigrams)

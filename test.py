@@ -67,6 +67,7 @@ class TestValidBigram(unittest.TestCase):
         self.assertFalse(markovify.valid_bigram('.', 'chain'))
         self.assertTrue(markovify.valid_bigram('markov.', 'chain.'))
         self.assertTrue(markovify.valid_bigram('..markov.', 'chain...'))
+        self.assertTrue(markovify.valid_bigram('markov.chain..', '..mark.c.'))
 
 class TestCountBigram(unittest.TestCase):
     def test_count_bigram(self):

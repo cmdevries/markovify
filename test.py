@@ -119,5 +119,28 @@ class TestMerge(unittest.TestCase):
         markovify.merge(bigrams, bigrams_new)
         self.assertEqual(bigrams, {})
 
+class ConverToProbabilities(unittest.TestCase):
+    def test_one_bigram(self):
+        bigrams = {'markov': {'chain': 1}}
+        markovify.convert_to_probabilities(bigrams)
+        self.assertEqual(bigrams['markov']['chain'], 1/float(1))
+    
+    def test_one_previous_many_current_words(self):
+        bigrams = {'markov': {'chain': 1, 'tree': 1, 'graph': 1}}
+        markovify.convert_to_probabilities(bigrams)
+        self.assertEqual(bigrams['markov']['chain'], 1/float(3))
+        self.assertEqual(bigrams['markov']['tree'], 1/float(3))
+        self.assertEqual(bigrams['markov']['graph'], 1/float(3))
+
+    def test_many_previous_many_current_words(self):
+        bigrams = {'markov': {'chain': 1, 'tree': 1, 'graph': 1},
+                   'chain': {'mal': 1, 'bridge': 1}}
+        markovify.convert_to_probabilities(bigrams)
+        self.assertEqual(bigrams['markov']['chain'], 1/float(3))
+        self.assertEqual(bigrams['markov']['tree'], 1/float(3))
+        self.assertEqual(bigrams['markov']['graph'], 1/float(3))
+        self.assertEqual(bigrams['chain']['mal'], 1/float(2))
+        self.assertEqual(bigrams['chain']['bridge'], 1/float(2))
+
 if __name__ == '__main__':
     unittest.main()

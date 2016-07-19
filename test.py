@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import markovify
 import requests
-import SimpleHTTPServer
-import SocketServer
 import unittest
 
 class TestTextParser(unittest.TestCase):

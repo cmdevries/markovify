@@ -69,5 +69,27 @@ class TestValidBigram(unittest.TestCase):
         self.assertTrue(markovify.valid_bigram('markov.', 'chain.'))
         self.assertTrue(markovify.valid_bigram('..markov.', 'chain...'))
 
+class TestCountBigram(unittest.TestCase):
+    def test_count_bigram(self):
+        bigrams = {}
+        markovify.count_bigram(bigrams, 'markov', 'chain')
+        self.assertEqual(bigrams['markov']['chain'], 1)
+        markovify.count_bigram(bigrams, 'markov', 'chain')
+        self.assertEqual(bigrams['markov']['chain'], 2)
+        markovify.count_bigram(bigrams, 'markov', 'chain')
+        markovify.count_bigram(bigrams, 'markov', 'chain')
+        self.assertEqual(bigrams['markov']['chain'], 4)
+        markovify.count_bigram(bigrams, 'markov', 'tree')
+        markovify.count_bigram(bigrams, 'markov', 'graph')
+        markovify.count_bigram(bigrams, 'markov', 'random')
+        markovify.count_bigram(bigrams, 'markov', 'graph')
+        markovify.count_bigram(bigrams, 'random', 'field')
+        markovify.count_bigram(bigrams, 'random', 'field')
+        self.assertEqual(bigrams['markov']['tree'], 1)
+        self.assertEqual(bigrams['markov']['graph'], 2)
+        self.assertEqual(bigrams['markov']['random'], 1)
+        self.assertEqual(bigrams['random']['field'], 2)
+        self.assertEqual(bigrams['markov']['chain'], 4)
+
 if __name__ == '__main__':
     unittest.main()

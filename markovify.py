@@ -100,6 +100,8 @@ def parse_tokens(text):
             if current_word != '':
                 words.append(current_word)
                 current_word = ''
+    if current_word != '':
+        words.append(current_word)
     return words
 
 def count_bigrams(text):

@@ -124,6 +124,17 @@ class TestCleanWord(unittest.TestCase):
         self.assertEqual(markovify.clean_word("'-..-'ma.rk-ov's"), "ma.rk-ov's")
         self.assertEqual(markovify.clean_word("'-..-'ma.rk-ov's'..-"), "ma.rk-ov's")
 
+class TestParseTokens(unittest.TestCase):
+    def test_parse_tokens(self):
+        self.assertEqual(markovify.parse_tokens('markov'), ['markov'])
+        self.assertEqual(markovify.parse_tokens('markov chain'), ['markov', 'chain'])
+        self.assertEqual(markovify.parse_tokens('markov\'s chain'), ['markov\'s', 'chain'])
+        self.assertEqual(markovify.parse_tokens('markov chain mal. the end'),
+            ['markov', 'chain', 'mal.', 'the', 'end'])
+        self.assertEqual(markovify.parse_tokens('markov-chain\'s. mal. the end'),
+            ['markov-chain\'s.', 'mal.', 'the', 'end'])
+        self.assertEqual(markovify.parse_tokens(''), [])
+
 class TestMerge(unittest.TestCase):
     def test_both_nonempty(self):
         bigrams = {'markov': {'chain': 1336}, 'chain': {'mal': 31335}}

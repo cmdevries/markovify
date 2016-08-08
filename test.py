@@ -134,6 +134,7 @@ class TestParseTokens(unittest.TestCase):
         self.assertEqual(markovify.parse_tokens('markov-chain\'s. mal. the end'),
             ['markov-chain\'s.', 'mal.', 'the', 'end'])
         self.assertEqual(markovify.parse_tokens(''), [])
+        self.assertEqual(markovify.parse_tokens('  lots   of    spaces    '), ['lots', 'of', 'spaces'])
 
 class TestMerge(unittest.TestCase):
     def test_both_nonempty(self):

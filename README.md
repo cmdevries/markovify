@@ -1,6 +1,6 @@
 # Markovify
-Fetch text from p tags in URLs and generate text using markov chains with
-transition probabilities learned from the text.
+Fetch text from p tags in URLs and generate text using large language models or
+markov chains with content learned from the text.
 
 ## Usage 
 The program takes a list of URLs to scrape via command line arguments.
@@ -28,3 +28,11 @@ Mix odd topics for more hilarity.
     
     She is using a person chooses to track how to his name be Jesus Day in Iraq
     and to as the law a fashion industry.
+
+Experimental support for generation using the Microsoft phi-2 LLM on Apple
+silicon using MLX.
+
+    $ ./markovify.py --mlx
+
+    The Nikon AF-S DX Nikkor mm f/2.8G ED VR is a full-frame,
+    wide angle prime lens for Nikon DX format DSLR cameras.

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import random
+import re
 import requests
 import sys
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 class Text(HTMLParser):
     """Extract text from <p> tags inside HTML."""
@@ -162,13 +163,13 @@ def generate_text(bigrams):
         return 'No statistics to available generate text'
     current_word = 'a'
     while current_word[0].islower(): # start with an upper case word
-        current_word = random.choice(bigrams.keys())
+        current_word = random.choice(list(bigrams.keys()))
     maximum = 10000
     text = ''
     for i in range(maximum):
         text += format_word(current_word)
         if current_word not in bigrams:
-            current_word = random.choice(bigrams.keys())
+            current_word = random.choice(list(bigrams.keys()))
             text += format_word(current_word)
         r = random.random()
         cumulative_probability = 0.0
@@ -190,11 +191,11 @@ def remove_broken_chains(bigrams):
     while removed_any:
         removed_any = False
         for countmap in bigrams.values():
-            for current_word in countmap.keys():
+            for current_word in list(countmap.keys()):
                 if current_word not in bigrams:
                     countmap.pop(current_word)
                     removed_any = True
-        for previous_word, countmap in bigrams.items():
+        for previous_word, countmap in list(bigrams.items()):
             if len(countmap) == 0:
                 bigrams.pop(previous_word)
                 removed_any = True
@@ -214,15 +215,45 @@ def process(urls):
     convert_to_probabilities(bigrams)
     print(generate_text(bigrams))
 
+def process_mlx(urls):
+    """process_mlx(list(string)) -> None
+    
+    Prompt the Microsoft Phi-2 LLM with all the text inside <p> tags and
+    generate text.
+    """
+    all_text = ''
+    for url in urls:
+        text, final_url = fetch_text(url)
+        print('FETCHED TEXT FROM: %s\n' % final_url)
+        all_text += text
+    all_text = all_text.replace('\n', '')
+    all_text = re.sub('[^a-zA-Z\.\s]', '', all_text)
+    all_text = re.sub('\s+', ' ', all_text)
+    all_text = re.sub(' \.', '.', all_text)
+    prompt = f'Summarize the following. {all_text}.'
+    from mlx_lm import load, generate
+    model, tokenizer = load('microsoft/phi-2')
+    response = generate(model, tokenizer, max_tokens=2048, prompt=all_text, \
+        verbose=True, temp=0.5)
+
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1].lower() == '--help':
         print('usage: %s [list of urls to learn markov chains from]'
             % sys.argv[0])
+        print('To use the phi-2 LLM on MacBook with MLX:')
+        print('%s --mlx [list of urls to learn from]' % sys.argv[0])
         sys.exit(1)
     pages = []
-    if len(sys.argv) < 2:
-        random_page = 'https://en.wikipedia.org/wiki/Special:Random'
-        pages = [random_page, random_page]
+    random_page = 'https://en.wikipedia.org/wiki/Special:Random'
+    if len(sys.argv) > 1 and sys.argv[1].lower() == '--mlx':
+        if len(sys.argv) < 3:
+            pages = [random_page, random_page]
+        else:
+            pages = sys.argv[2:]
+        process_mlx(pages)
     else:
-        pages = sys.argv[1:]
-    process(pages)
+        if len(sys.argv) < 2:
+            pages = [random_page, random_page]
+        else:
+            pages = sys.argv[1:]
+        process(pages)
